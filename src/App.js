@@ -6,50 +6,64 @@ import {
   AutoSizer,
   CellMeasurer,
   CellMeasurerCache,
-  List,
+  Grid,
 } from 'react-virtualized';
 
 const rowCount = 10000;
+const columnCount = 1;
 
 class App extends Component {
   constructor() {
     super();
     this.list = Array(rowCount)
       .fill()
-      .map((_, index) => ({
-        id: index,
-        name: 'John Doe',
-        image: 'http://via.placeholder.com/40',
-        text: loremIpsum({
-          count: 2,
-          units: 'sentences',
-          sentenceLowerBound: 10,
-          sentenceUpperBound: 100,
-        }),
-      }));
+      .map((_, rowIndex) =>
+        Array(columnCount)
+          .fill()
+          .map((_, columnIndex) => ({
+            id: `${rowIndex}-${columnIndex}`,
+            name: 'John Doe',
+            salutation: 'Mr.',
+            image: 'http://via.placeholder.com/320',
+            // text: loremIpsum({
+            //   count: 2,
+            //   units: 'sentences',
+            //   sentenceLowerBound: 10,
+            //   sentenceUpperBound: 100,
+            // }),
+          })),
+      );
     this.cache = new CellMeasurerCache({
       fixedWidth: true,
       defaultHeight: 100,
     });
   }
 
-  renderRow = ({ index, key, parent, style }) => (
+  renderCell = ({ rowIndex, columnIndex, key, parent, style }) => (
     <CellMeasurer
       key={key}
       cache={this.cache}
       parent={parent}
-      columnIndex={0}
-      rowIndex={index}
+      columnIndex={columnIndex}
+      rowIndex={rowIndex}
     >
-      <div style={style} className="row">
-        <div className="image">
-          <img src={this.list[index].image} alt="" />
+      {({ measure }) => (
+        <div style={style} className="cell">
+          <div className="card">
+            <div className="image">
+              <img
+                src={this.list[rowIndex][columnIndex].image}
+                alt=""
+                onLoad={measure}
+              />
+            </div>
+            <div className="content">
+              <div>{this.list[rowIndex][columnIndex].salutation}</div>
+              <div>{this.list[rowIndex][columnIndex].name}</div>
+            </div>
+          </div>
         </div>
-        <div className="content">
-          <div>{this.list[index].name}</div>
-          <div>{this.list[index].text}</div>
-        </div>
-      </div>
+      )}
     </CellMeasurer>
   );
 
@@ -63,13 +77,16 @@ class App extends Component {
         <div className="list">
           <AutoSizer>
             {({ width, height }) => (
-              <List
+              <Grid
+                className="grid"
                 width={width}
                 height={height}
                 deferredMeasurementCache={this.cache}
                 rowHeight={this.cache.rowHeight}
                 rowCount={this.list.length}
-                rowRenderer={this.renderRow}
+                cellRenderer={this.renderCell}
+                columnCount={this.list[0].length}
+                columnWidth={width / this.list[0].length}
               />
             )}
           </AutoSizer>

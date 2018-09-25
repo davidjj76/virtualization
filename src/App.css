@@ -24,18 +24,32 @@
   height: calc(100vh - 210px);
 }
 
-.row {
-  border-bottom: 1px solid #ebeced;
-  text-align: left;
-  margin: 5px 0;
+.cell {
+}
+
+.card {
+  margin: 10px;
+  border: 1px solid #ebeced;
+  background: lightblue;
+  border-radius: 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
 .image {
-  margin-right: 10px;
+  width: 80%;
+}
+
+.image img {
+  object-fit: content;
+  max-width: 100%;
 }
 
 .content {
   padding: 10px;
+}
+
+.grid {
+  overflow-x: hidden !important;
 }
